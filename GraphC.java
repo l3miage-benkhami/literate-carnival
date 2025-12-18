@@ -1,10 +1,12 @@
 
+import java.util.LinkedList;
 
 public class GraphC {
     public int nbSommets;
-    public int head = 0; // <- can be changed, needed later if the graph is a path
     public Sommet[] sommets;
     
+    GraphC(){}
+
     GraphC(String filename) {
         InputFile f = new InputFile();
         f.open(filename);
@@ -38,11 +40,8 @@ public class GraphC {
         }
     }
 
-    void PCC1toAll(int source, int[] distances, int[] parents) {
-        // Set up distances
-        distances = new int[this.nbSommets];
-        parents = new int[this.nbSommets];
-
+    void ShortestPathsFromSource(int source, int[] distances, int[] parents) {  
+        // Initialization des tableaux
         for (int i = 0; i < this.nbSommets; i++) {
             if (source != i) distances[i] = Integer.MAX_VALUE;
             else distances[i] = 0;
@@ -50,23 +49,25 @@ public class GraphC {
             parents[i] = -1;            
         }
 
-        // Visited vertices
+        // On retient les sommets visités
         boolean[] visited = new boolean[this.nbSommets];
         for (int i = 0; i < this.nbSommets; i++) {
             visited[i] = false;
         }
 
-        // Find vertex with min cost
+        // 
         for (int i = 0; i < this.nbSommets; i++) {
             int curReachableSommet = -1;
-
+            int minDistance = Integer.MAX_VALUE;
+            // Trouve le sommets avec la moidre distance
             for (int v = 0; v < this.nbSommets; v++) {
-                if (!visited[v] && distances[v] < Integer.MAX_VALUE) {
+                if (!visited[v] && distances[v] < minDistance) {
                     curReachableSommet = v;
+                    minDistance = distances[v];
                 }
             }
 
-            if (curReachableSommet == -1) break; // Soit on a terminé soit on ne peut rien atteindre
+            if (curReachableSommet == -1) break; // On quite la boucle si on peut atteinre aucun sommet
 
             visited[curReachableSommet] = true;
             // On regarde les sommets atteignables depuis le sommets qu'on a trouvé
@@ -75,6 +76,8 @@ public class GraphC {
                 int v = s.Successors[j];
                 int cost = s.PathCosts[j];
 
+                // Si on trouve un parcours plus court pour atteindre le sommet V depuis le sommet actuel,
+                // on garde cette nouvelle distance et on met à jour le parent
                 if (!visited[v] 
                     && (distances[curReachableSommet] + cost) < distances[v])
                 {
@@ -86,4 +89,53 @@ public class GraphC {
         }
     }
 
+    GraphC[] PCC1toAll(Sommet s) {
+        int[] parents = new int[this.nbSommets];
+        int[] distances = new int[this.nbSommets];
+        this.ShortestPathsFromSource(s.name, distances, parents); // trouve les parcours les plus courts et les parents
+        // Array des graphes à retourner
+        GraphC[] graphs = new GraphC[this.nbSommets];
+
+        for (int v = 0; v < this.nbSommets; v++) {
+            // Reconstruire le chemin entre la source et le sommets V
+            // On utilise une linked car l'insertion au début de la liste se fait en temps constant
+            LinkedList<Integer> chemin = new LinkedList<>();
+            int cur = v;
+
+            // On quite quand on trouve -1 car la source n'a pas de parent
+            while (cur != -1) {
+                chemin.addFirst(cur);
+                cur = parents[cur];
+            }
+
+            // recnstruire le graphe
+            GraphC g = new GraphC();
+            g.nbSommets = chemin.size();
+            g.sommets = new Sommet[g.nbSommets];
+
+            for (int i = 0; i < chemin.size(); i++) {
+                int sommetActuel = chemin.get(i);
+
+                if (i < chemin.size() - 1) { // tant qu'on est pas arrivé à la fin du chemin
+                    int[] succ = { chemin.get(i + 1) };
+                    int[] cost = { 0 }; 
+                    g.sommets[i] = new Sommet(sommetActuel, 1, succ, cost);
+                } else {
+                    g.sommets[i] = new Sommet(sommetActuel, 0, new int[0], new int[0]);
+                }
+            }
+
+            graphs[v] = g;
+        }
+
+        return graphs;
+    }
+
+    public GraphC[][] PCCAlltoAll() {
+        GraphC [][] res = new GraphC[nbSommets][];
+        for (int i = 0; i < nbSommets; i++) {
+            res[i] = PCC1toAll(sommets[i]);
+        }
+        return res;
+    }
 }
