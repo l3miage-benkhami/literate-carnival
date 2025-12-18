@@ -54,7 +54,6 @@ public class GraphC {
             visited[i] = false;
         }
 
-        // 
         for (int i = 0; i < this.nbSommets; i++) {
             int curReachableSommet = -1;
             int minDistance = Integer.MAX_VALUE;
@@ -100,7 +99,6 @@ public class GraphC {
             // On utilise une linked car l'insertion au début de la liste se fait en temps constant
             LinkedList<Integer> chemin = new LinkedList<>();
             int cur = v;
-
             // On quite quand on trouve -1 car la source n'a pas de parent
             while (cur != -1) {
                 chemin.addFirst(cur);
@@ -116,6 +114,8 @@ public class GraphC {
                 int sommetActuel = chemin.get(i);
 
                 if (i < chemin.size() - 1) { // tant qu'on est pas arrivé à la fin du chemin
+                                            // si on enlève le -1, il y aura un bug dans la ligne suivate
+                                            // car le dernier élément de la liste n'a pas de successeur
                     int[] succ = { chemin.get(i + 1) };
                     int[] cost = { this.findCostFromAtoB(chemin.get(i), chemin.get(i+1)) }; 
                     g.sommets[i] = new Sommet(sommetActuel, 1, succ, cost);
