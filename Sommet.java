@@ -12,7 +12,7 @@ public class Sommet {
     void Afficher() {
         System.out.printf("%d", this.nbSuccessors);
         for (int i = 0; i < this.nbSuccessors; i++) {
-            System.out.printf(" %d  %d ", this.Successors[i], this.PathCosts[i]);
+            System.out.printf(" %d %d", this.Successors[i], this.PathCosts[i]);
         }
         System.out.println();
     }
