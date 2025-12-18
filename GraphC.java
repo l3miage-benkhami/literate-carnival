@@ -1,4 +1,3 @@
-
 import java.util.LinkedList;
 
 public class GraphC {
@@ -67,7 +66,7 @@ public class GraphC {
                 }
             }
 
-            if (curReachableSommet == -1) break; // On quite la boucle si on peut atteinre aucun sommet
+            if (curReachableSommet == -1) break; // On quite la boucle si on peut atteindre aucun sommet
 
             visited[curReachableSommet] = true;
             // On regarde les sommets atteignables depuis le sommets qu'on a trouvé
@@ -118,7 +117,7 @@ public class GraphC {
 
                 if (i < chemin.size() - 1) { // tant qu'on est pas arrivé à la fin du chemin
                     int[] succ = { chemin.get(i + 1) };
-                    int[] cost = { 0 }; 
+                    int[] cost = { this.findCostFromAtoB(chemin.get(i), chemin.get(i+1)) }; 
                     g.sommets[i] = new Sommet(sommetActuel, 1, succ, cost);
                 } else {
                     g.sommets[i] = new Sommet(sommetActuel, 0, new int[0], new int[0]);
@@ -138,4 +137,10 @@ public class GraphC {
         }
         return res;
     }
+
+    public int findCostFromAtoB(int a, int b) {
+        int i;
+        for(i = 0; this.sommets[a].Successors[i] != b; i++){}
+        return this.sommets[a].PathCosts[i];
+    }   
 }

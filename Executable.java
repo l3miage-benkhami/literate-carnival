@@ -11,9 +11,9 @@ public class Executable {
         GraphC[][] resAll = g.PCCAlltoAll();
         for (int i = 0; i < resAll.length; i++)
         {
-            System.out.println("***********************************");
+            System.out.println("----------");
             printG(resAll[i], i);
-            System.out.println("***********************************");
+            System.out.println("----------");
         }
 
     }
