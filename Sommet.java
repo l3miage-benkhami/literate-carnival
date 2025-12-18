@@ -1,9 +1,11 @@
 public class Sommet {
+    int name;
     public int nbSuccessors = 0;
     public int[] Successors;
     public int[] PathCosts;
 
-    Sommet(int nbSuccessors, int[] Successors, int[] PathCosts) {
+    Sommet(int name, int nbSuccessors, int[] Successors, int[] PathCosts) {
+        this.name = name;
         this.nbSuccessors = nbSuccessors;
         this.Successors = Successors.clone();
         this.PathCosts = PathCosts.clone();
